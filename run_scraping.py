@@ -11,10 +11,10 @@ import django
 django.setup()
 from django.db import DatabaseError
 parsers = (
-            (work, 'https://www.work.ua/ru/jobs-kyiv-python/'),
-            (dou, 'https://jobs.dou.ua/vacancies/?city=%D0%9A%D0%B8%D1%97%D0%B2&category=Python'),
-            (rabota, 'https://rabota.ua/zapros/python/%D0%BA%D0%B8%D0%B5%D0%B2'),
-            (djinni, 'https://djinni.co/jobs/keyword-python/kyiv')
+            (work, ''),
+            (dou, ''),
+            (rabota, ''),
+            (djinni, '')
            )
 
 jobs, errors = [], []

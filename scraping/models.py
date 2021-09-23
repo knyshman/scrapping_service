@@ -2,6 +2,10 @@ from django.db import models
 from .utils import from_cyrillic_to_eng
 
 
+def dafault_urls():
+    return {'work': '', 'dou': '', 'djinni': '', 'rabota': ''}
+
+
 class City(models.Model):
     name = models.CharField(verbose_name='Город', max_length=50, unique=True)
     slug = models.CharField(max_length=50, blank=True, unique=True)
@@ -56,3 +60,12 @@ class Vacancy(models.Model):
 class Error(models.Model):
     timestamp = models.DateField(auto_now_add=True)
     data = models.JSONField()
+
+
+class Url(models.Model):
+    city = models.ForeignKey(City, on_delete=models.CASCADE, verbose_name='Город')
+    language = models.ForeignKey(Language, on_delete=models.CASCADE, verbose_name='Язык программирования')
+    url_data = models.JSONField(default=dafault_urls)
+    
+    class Meta:
+        unique_together = ("city", "language")
