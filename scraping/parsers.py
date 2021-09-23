@@ -1,15 +1,23 @@
 import requests
 from bs4 import BeautifulSoup as BS
+from random import randint
 
-headers = {'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/94.0.4606.54 Safari/537.36',
-        'Accept':'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9'}
+
+headers = [
+    {'User-Agent': 'Mozilla/5.0 (Windows NT 5.1; rv:47.0) Gecko/20100101 Firefox/47.0',
+        'Accept':'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8'},
+    {'User-Agent': 'Mozilla/5.0 (Windows NT 5.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/49.0.2623.112 Safari/537.36',
+        'Accept':'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8'},
+    {'User-Agent': 'Mozilla/5.0 (Windows NT 6.1; rv:53.0) Gecko/20100101 Firefox/53.0',
+        'Accept':'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8'}
+    ]
 
 
 def work(url):
     errors = []
     jobs = []
     url = 'https://www.work.ua/ru/jobs-%D0%BF%D1%80%D0%BE%D0%B3%D1%80%D0%B0%D0%BC%D0%BC%D0%B8%D1%81%D1%82/'
-    resp = requests.get(url, headers=headers)
+    resp = requests.get(url, headers=headers[randint(0, 2)])
     domain = 'https://www.work.ua'
     if resp.status_code == 200:
         soup = BS(resp.content, 'html.parser')
@@ -38,7 +46,7 @@ def rabota(url, city=None, language=None):
     errors = []
     domain = 'https://rabota.ua'
     if url:
-        resp = requests.get(url, headers=headers)
+        resp = requests.get(url, headers=headers[randint(0, 2)])
         if resp.status_code == 200:
             soup = BS(resp.content, 'html.parser')
             new_jobs = soup('div', attrs={'class': 'f-vacancylist-notfoundblock-anotherregionstitle'})
@@ -78,7 +86,7 @@ def dou(url, city=None, language=None):
     jobs = []
     errors = []
     if url:
-        resp = requests.get(url, headers=headers)
+        resp = requests.get(url, headers=headers[randint(0, 2)])
         if resp.status_code == 200:
             soup = BS(resp.content, 'html.parser')
             main_div = soup.find('div', id='vacancyListId')
@@ -109,7 +117,7 @@ def djinni(url, city=None, language=None):
     errors = []
     domain = 'https://djinni.co'
     if url:
-        resp = requests.get(url, headers=headers)
+        resp = requests.get(url, headers=headers[randint(0, 2)])
         if resp.status_code == 200:
             soup = BS(resp.content, 'html.parser')
             main_ul = soup.find('ul',  attrs={'class': 'list-jobs'})
@@ -126,7 +134,6 @@ def djinni(url, city=None, language=None):
                     company = 'No name'
                     comp = li.find('div',
                                    attrs={'class': 'list-jobs__details__info'})
-                    print(comp)
                     if comp:
                         company = comp.findAll('a')[1].text
                     jobs.append({'title': title.text.strip(), 'url': domain + href,
@@ -136,13 +143,4 @@ def djinni(url, city=None, language=None):
                 errors.append({'url': url, 'title': "Div does not exists"})
         else:
             errors.append({'url': url, 'title': "Page do not response"})
-
     return jobs, errors
-
-
-if __name__ == '__main__':
-    url = 'https://djinni.co/jobs/'
-    jobs, errors = djinni(url)
-    h = open('work.json', 'w', encoding='utf-8')
-    h.write(str(jobs))
-    h.close()
